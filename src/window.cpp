@@ -8,7 +8,7 @@
 
 using json = nlohmann::json;
 
-const std::string languages [] = {
+const std::string languages[] = {
     "Albanian",
     "Azerbaijani",
     "Bengali",
@@ -41,14 +41,13 @@ const std::string languages [] = {
     "Turkish",
     "Uyghur",
     "Urdu",
-    "Uzbek"
-};
+    "Uzbek"};
 
 Window::Window()
 {
-    QWidget *mainWidget = new QWidget; // Main Widget
-    QVBoxLayout *mainLayout = new QVBoxLayout;   // Main Layout
-    QGroupBox *tabularButtonGroup = new QGroupBox;  // button group to switch between reading mode and multi mode
+    QWidget *mainWidget = new QWidget;             // Main Widget
+    QVBoxLayout *mainLayout = new QVBoxLayout;     // Main Layout
+    QGroupBox *tabularButtonGroup = new QGroupBox; // button group to switch between reading mode and multi mode
     QHBoxLayout *tabularLayout = new QHBoxLayout;
     stackedWidget = new QStackedWidget;
     multiButton = new QPushButton("Translation");
@@ -58,18 +57,18 @@ Window::Window()
     tabularLayout->addWidget(multiButton);
     tabularLayout->addWidget(readingButton);
     tabularButtonGroup->setLayout(tabularLayout);
-    createMenu();                              // Call createMenu() to configure MenuBar
-    setMenuBar(menuBar);                       // set MenuBar
+    createMenu();        // Call createMenu() to configure MenuBar
+    setMenuBar(menuBar); // set MenuBar
     stackedWidget->addWidget(multiWidget());
     stackedWidget->addWidget(readingWidget());
     stackedWidget->setCurrentIndex(0);
     mainLayout->addWidget(stackedWidget);
     mainLayout->addWidget(tabularButtonGroup);
     mainWidget->setLayout(mainLayout);
-    setCentralWidget(mainWidget);              // set Main Widget
-    setWindowTitle("Quran App");               // set Window Title
-    setMinimumWidth(800);                      // set Minimum Width of Window
-    setMinimumHeight(600);                     // set Minimum Height of Window
+    setCentralWidget(mainWidget); // set Main Widget
+    setWindowTitle("Quran App");  // set Window Title
+    setMinimumWidth(800);         // set Minimum Width of Window
+    setMinimumHeight(600);        // set Minimum Height of Window
     connect(multiButton, SIGNAL(clicked()), this, SLOT(multiMode()));
     connect(readingButton, SIGNAL(clicked()), this, SLOT(readingMode()));
     connect(surahList, SIGNAL(currentTextChanged(QString)), this, SLOT(changeSurah())); // Watch Changes in ComboBox surah
@@ -89,26 +88,28 @@ void Window::createMenu()
     menuBar = new QMenuBar;
     Menu = new QMenu(tr("Menu"), this);
     prayertimes = Menu->addAction(tr("Prayer Times"));
-    about = Menu->addAction(tr("About"));        // Add About Menu Entry
+    about = Menu->addAction(tr("About")); // Add About Menu Entry
     menuBar->addMenu(Menu);
-    connect(about, SIGNAL(triggered()), this, SLOT(showAbout())); 
+    connect(about, SIGNAL(triggered()), this, SLOT(showAbout()));
     connect(prayertimes, SIGNAL(triggered()), this, SLOT(showPrayerTimes()));
 }
 
-QWidget *Window::multiWidget() {
-    QWidget *MultiWidget = new QWidget;         
-    QVBoxLayout *MultiLayout = new QVBoxLayout; 
-    MultiLayout->addWidget(createComboBox());   
-    MultiLayout->addWidget(createPlayerUi());   
-    MultiLayout->addWidget(createTextBox());    
+QWidget *Window::multiWidget()
+{
+    QWidget *MultiWidget = new QWidget;
+    QVBoxLayout *MultiLayout = new QVBoxLayout;
+    MultiLayout->addWidget(createComboBox());
+    MultiLayout->addWidget(createPlayerUi());
+    MultiLayout->addWidget(createTextBox());
     MultiWidget->setLayout(MultiLayout);
     return MultiWidget;
 }
 
-QWidget *Window::readingWidget() {
+QWidget *Window::readingWidget()
+{
     QWidget *ReadingWidget = new QWidget;
     QVBoxLayout *ReadingLayout = new QVBoxLayout;
-    surahInReadmode= new QTextEdit;
+    surahInReadmode = new QTextEdit;
     getSurah("Al_Faatiha", "quran", surahInReadmode);
     ReadingLayout->addWidget(readList);
     ReadingLayout->addWidget(surahInReadmode);
@@ -120,26 +121,26 @@ QGroupBox *Window::createComboBox()
 {
     // Function to Configure ComboBox
     QDBReader Database;
-    std::vector<std::string>data = Database.metadata();
+    std::vector<std::string> data = Database.metadata();
     QGroupBox *group = new QGroupBox;      // GroupBox ( To Group Widgets )
     QHBoxLayout *layout = new QHBoxLayout; // Horizontal Layout
-    surahList = new QComboBox;      
+    surahList = new QComboBox;
     readList = new QComboBox;
     translationList = new QComboBox;
-    if(data.empty())
+    if (data.empty())
     {
-        surahList->addItem("Database is Missing"); 
+        surahList->addItem("Database is Missing");
         readList->addItem("Database is Missing");
     }
     else
     {
-        for(int i=0;i<114;i++)
+        for (int i = 0; i < 114; i++)
         {
-            surahList->addItem(QString::number(i+1) + ". " + QString::fromStdString(data.at(i)));
-            readList->addItem(QString::number(i+1) + ". " + QString::fromStdString(data.at(i)));
+            surahList->addItem(QString::number(i + 1) + ". " + QString::fromStdString(data.at(i)));
+            readList->addItem(QString::number(i + 1) + ". " + QString::fromStdString(data.at(i)));
         }
     }
-    for(auto element : languages)
+    for (auto element : languages)
     {
         translationList->addItem(QString::fromStdString(element));
     }
@@ -187,27 +188,25 @@ QGroupBox *Window::createPlayerUi()
     PlayerLayout->addWidget(positionLabel);
     PlayerBox->setLayout(PlayerLayout);
     return PlayerBox;
-
 }
-
 
 QUrl Window::getQuranUrl(int surah_number)
 {
     QUrl qurl;
     std::string QuranUrl = "https://server8.mp3quran.net/afs/";
-    if(surah_number >= 1 && surah_number <= 9)
+    if (surah_number >= 1 && surah_number <= 9)
     {
         QuranUrl.append("00");
         QuranUrl.append(std::to_string(surah_number));
         QuranUrl.append(".mp3");
     }
-    else if(surah_number >= 10 && surah_number <= 99)
+    else if (surah_number >= 10 && surah_number <= 99)
     {
         QuranUrl.append("0");
         QuranUrl.append(std::to_string(surah_number));
         QuranUrl.append(".mp3");
     }
-    else if(surah_number >= 100 && surah_number <= 114)
+    else if (surah_number >= 100 && surah_number <= 114)
     {
         QuranUrl.append(std::to_string(surah_number));
         QuranUrl.append(".mp3");
@@ -217,7 +216,7 @@ QUrl Window::getQuranUrl(int surah_number)
     return qurl;
 }
 
-void Window::getSurah(std::string surah_name, std::string edition, QTextEdit* textbox)
+void Window::getSurah(std::string surah_name, std::string edition, QTextEdit *textbox)
 {
     QDBReader Database;
     std::vector<std::string> data;
@@ -228,16 +227,16 @@ void Window::getSurah(std::string surah_name, std::string edition, QTextEdit* te
     textbox->setText(QString::fromStdString(meta.at(surah_number)));
     QTextCursor cursor = textbox->textCursor();
     QTextBlockFormat textBlockFormat = cursor.blockFormat();
-    textBlockFormat.setAlignment(Qt::AlignCenter);              // Align Text to Center
+    textBlockFormat.setAlignment(Qt::AlignCenter); // Align Text to Center
     cursor.mergeBlockFormat(textBlockFormat);
-    data = Database.content(Database.replaceStr((char*)surah_name.c_str()), Database.getedition(edition));
-    for(auto str : data)
+    data = Database.content(Database.replaceStr((char *)surah_name.c_str()), Database.getedition(edition));
+    for (auto str : data)
         textbox->append(QString::fromStdString(str));
     textbox->selectAll();
     textbox->setFont(arabic);
     textbox->setFontPointSize(22); // set Font Size
     textbox->setTextCursor(cursor);
-    textbox->setReadOnly(true);    // set Text Box Read Only
+    textbox->setReadOnly(true); // set Text Box Read Only
 }
 
 void Window::getTranslation(std::string translation_name, std::string edition)
@@ -249,8 +248,8 @@ void Window::getTranslation(std::string translation_name, std::string edition)
     QTextCursor cursor = translationInMulti->textCursor();
     QTextBlockFormat textBlockFormat = cursor.blockFormat();
     cursor.mergeBlockFormat(textBlockFormat);
-    data = Database.content(Database.replaceStr((char*)translation_name.c_str()), Database.getedition(edition));
-    for(auto str : data)
+    data = Database.content(Database.replaceStr((char *)translation_name.c_str()), Database.getedition(edition));
+    for (auto str : data)
         translationInMulti->append(QString::fromStdString(str) + "\n");
     translationInMulti->selectAll();
     translationInMulti->setFontPointSize(16);
@@ -258,29 +257,32 @@ void Window::getTranslation(std::string translation_name, std::string edition)
     translationInMulti->setReadOnly(true);
 }
 
-void Window::multiMode() {
+void Window::multiMode()
+{
     stackedWidget->setCurrentIndex(0);
 }
 
-void Window::readingMode() {
+void Window::readingMode()
+{
     stackedWidget->setCurrentIndex(1);
 }
 
 void Window::changeSurah()
 {
     QDBReader Database;
-    std::vector<std::string>data = Database.metadata();
+    std::vector<std::string> data = Database.metadata();
     surah_number = surahList->currentIndex();
     getSurah(data.at(surah_number), "quran", surahInMultimode);
     getTranslation(data.at(surah_number), translationList->currentText().toStdString());
-    QuranUrl = getQuranUrl(surahList->currentIndex()+1);
+    QuranUrl = getQuranUrl(surahList->currentIndex() + 1);
     Mediaplayer.stop();
     Mediaplayer.setMedia(QuranUrl);
 }
 
-void Window::changeSurahInRead() {
+void Window::changeSurahInRead()
+{
     QDBReader Database;
-    std::vector<std::string>data = Database.metadata();
+    std::vector<std::string> data = Database.metadata();
     surah_number = readList->currentIndex();
     getSurah(data.at(surah_number), "quran", surahInReadmode);
 }
@@ -288,7 +290,7 @@ void Window::changeSurahInRead() {
 void Window::changeTranslation()
 {
     QDBReader Database;
-    std::vector<std::string>data = Database.metadata();
+    std::vector<std::string> data = Database.metadata();
     surah_number = surahList->currentIndex();
     getTranslation(data.at(surah_number), translationList->currentText().toStdString());
 }
@@ -331,7 +333,7 @@ void Window::showAbout()
     layout->addWidget(footer);
     layout->addWidget(version);
     AboutWindow->setLayout(layout);
-    AboutWindow->setMinimumSize(602,443);
+    AboutWindow->setMinimumSize(602, 443);
     AboutWindow->setWindowTitle("About");
     AboutWindow->show();
 }
@@ -339,7 +341,7 @@ void Window::showAbout()
 void Window::showPrayerTimes()
 {
     PrayerTimeWidget = new QWidget;
-    QGridLayout *Layout = new QGridLayout; 
+    QGridLayout *Layout = new QGridLayout;
     QFont timeFont("Arial", 18, QFont::Bold);
     QFont textFont("Arial", 15, QFont::Bold);
     QDate today = QDate::currentDate();
@@ -371,20 +373,20 @@ void Window::showPrayerTimes()
     midnight->setFont(textFont);
     display->setFont(timeFont);
     DateToday->setFont(textFont);
-    Layout->addWidget(display, 0, 1, 0);
-    Layout->addWidget(DateToday, 1, 1, 0);
-    Layout->addWidget(Country, 2, 0, 0);
-    Layout->addWidget(City, 2, 1, 0);
-    Layout->addWidget(Show, 2, 2, 0);
-    Layout->addWidget(imsak, 3, 0, 0);
-    Layout->addWidget(fajr, 3, 1, 0);
-    Layout->addWidget(sunrise, 3, 2, 0);
-    Layout->addWidget(zuhr, 4, 0, 0);
-    Layout->addWidget(asr, 4, 1, 0);
-    Layout->addWidget(maghrib, 4, 2, 0);
-    Layout->addWidget(isha, 5, 0, 0);
-    Layout->addWidget(sunset, 5, 1, 0);
-    Layout->addWidget(midnight, 5, 2, 0);
+    Layout->addWidget(display, 0, 1, Qt::Alignment());
+    Layout->addWidget(DateToday, 1, 1, Qt::Alignment());
+    Layout->addWidget(Country, 2, 0, Qt::Alignment());
+    Layout->addWidget(City, 2, 1, Qt::Alignment());
+    Layout->addWidget(Show, 2, 2, Qt::Alignment());
+    Layout->addWidget(imsak, 3, 0, Qt::Alignment());
+    Layout->addWidget(fajr, 3, 1, Qt::Alignment());
+    Layout->addWidget(sunrise, 3, Qt::Alignment());
+    Layout->addWidget(zuhr, 4, 0, Qt::Alignment());
+    Layout->addWidget(asr, 4, 1, Qt::Alignment());
+    Layout->addWidget(maghrib, 4, Qt::Alignment());
+    Layout->addWidget(isha, 5, 0, Qt::Alignment());
+    Layout->addWidget(sunset, 5, 1, Qt::Alignment());
+    Layout->addWidget(midnight, 5, 2, Qt::Alignment());
     PrayerTimeWidget->setLayout(Layout);
     PrayerTimeWidget->setWindowTitle("Prayer Times");
     PrayerTimeWidget->setMinimumSize(600, 400);
@@ -398,7 +400,7 @@ void Window::showTime()
 {
     QTime time = QTime::currentTime();
     QString time_text = time.toString("hh:mm AP");
-    if((time.second() % 2) == 0)
+    if ((time.second() % 2) == 0)
     {
         time_text[2] = ' ';
     }
@@ -411,14 +413,15 @@ void Window::getPrayerTimes()
     std::string country = Country->text().toStdString();
     std::string city = City->text().toStdString();
     apiurl.append(city + "&country=" + country + "&method=4");
-    for(int i=0;apiurl[i] != '\0';i++)
+    for (int i = 0; apiurl[i] != '\0'; i++)
     {
-        if(apiurl[i] == ' ')
+        if (apiurl[i] == ' ')
             apiurl[i] = '%';
     }
     QString temp;
     this->url = apiurl;
-    try{
+    try
+    {
         json result = json::parse(curl_process());
         temp = "Imsak: ";
         temp.append(QString::fromStdString(result["data"]["timings"]["Imsak"].get<std::string>()));
@@ -447,7 +450,9 @@ void Window::getPrayerTimes()
         temp = "Sunset: ";
         temp.append(QString::fromStdString(result["data"]["timings"]["Sunset"].get<std::string>()));
         sunset->setText(temp);
-    } catch(nlohmann::json::type_error &err) {
+    }
+    catch (nlohmann::json::type_error &err)
+    {
         QMessageBox::critical(PrayerTimeWidget, "Error", "Make sure you have connected to internet and entered a valid location , or maybe the API is down");
         std::cerr << err.what() << std::endl;
     }
@@ -455,7 +460,7 @@ void Window::getPrayerTimes()
 
 void Window::set_play()
 {
-    if(!quran_is_playing || quran_is_paused)
+    if (!quran_is_playing || quran_is_paused)
     {
         Mediaplayer.play();
         quran_is_playing = true;
@@ -465,7 +470,7 @@ void Window::set_play()
 
 void Window::set_pause()
 {
-    if(quran_is_playing)
+    if (quran_is_playing)
     {
         Mediaplayer.pause();
         quran_is_paused = true;
@@ -475,7 +480,7 @@ void Window::set_pause()
 
 void Window::set_stop()
 {
-    if(quran_is_playing || quran_is_paused)
+    if (quran_is_playing || quran_is_paused)
     {
         Mediaplayer.stop();
         quran_is_playing = false;
